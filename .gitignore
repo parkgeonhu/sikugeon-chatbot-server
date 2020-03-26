@@ -1,0 +1,39 @@
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+### Pycharm
+.idea/
+
+### Django ###
+db.sqlite3
+media
+static_production/
+static_root/
+local.py
+*.log
+
+*.pyc
+*~
+__pycache__
+myvenv
+db.sqlite3
+/static
+.DS_Store
+
+
+## pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+## postgres data files
+docker/.data/
+
+## mockingjay test storage
+mockingjay.sqlite3
+goorm.manifest
+.temp
