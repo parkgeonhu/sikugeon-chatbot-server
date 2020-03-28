@@ -24,7 +24,7 @@ db.sqlite3
 /static
 .DS_Store
 
-
+util
 ## pytest
 .pytest_cache/
 htmlcov/
