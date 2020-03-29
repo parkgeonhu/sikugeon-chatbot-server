@@ -5,7 +5,7 @@ __pycache__/
 *$py.class
 
 migrations/
-settings.py
+sikugeon_bot/settings.py
 
 ### Pycharm
 .idea/
