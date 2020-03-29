@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .parser import get_sikugeon_list
 from .kakaomap import *
 from app.models import Store
-
+from haversine import haversine
 
 #비동기 처리를 위해서
 def serviceWorker(stores):
@@ -46,6 +46,7 @@ def dataParsing(request):
     # response=json.loads(request.body)
     
     stores=get_sikugeon_list()
+
     
     serviceWorker(stores)
     
@@ -71,8 +72,19 @@ def reply(request):
     response=json.loads(request.body)
     
     location=response["action"]["params"]["location"]
+    info=get_location_info(location)
+    user_x=get_location_x(info)
+    user_y=get_location_y(info)
     
+    user=(float(user_y), float(user_x))
+    stores=Store.objects.all()
+    near_store = [store for store in stores
+                 if haversine(user, (store.loc_y, store.loc_x)) <= 4]
     
+    result=[]
+    for store in near_store:
+        result.append(store.name)
+    str1=''.join(result)
     
     result = {
         "version": "2.0",
@@ -80,12 +92,11 @@ def reply(request):
             "outputs": [
                 {
                     "simpleText": {
-                        "text": location
+                        "text": str1
                     }
                 }
             ]
         }
     }
-
 
     return JsonResponse(result, status=200)
