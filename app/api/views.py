@@ -13,6 +13,8 @@ from app.models import Store
 #비동기 처리를 위해서
 def serviceWorker(places):
     for place in places:
+        if len(Store.objects.filter(name=place)) > 0:
+            break
         info=get_store_info(place)
         loc_x=get_location_x(info)
         loc_y=get_location_y(info)
