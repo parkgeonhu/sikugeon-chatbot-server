@@ -11,14 +11,32 @@ from app.models import Store
 
 
 #비동기 처리를 위해서
-def serviceWorker(places):
-    for place in places:
-        if len(Store.objects.filter(name=place)) > 0:
-            break
-        info=get_store_info(place)
+def serviceWorker(stores):
+    local_store=[]
+    
+    # db에 있는 Store 데이터
+    for store in Store.objects.all():
+        local_store.append(store.name)
+    
+    # origin => 식후건 리스트에 저장된 맛집
+    # local => 현재 django db에 저장되어 있는 맛집
+    local_set=set(local_store)
+    origin_set=set(stores)
+    
+    create_list=list(origin_set-local_set)
+    delete_list=list(local_set-origin_set)
+    
+    #store에 신규 가게 추가
+    for store in create_list:
+        info=get_store_info(store)
         loc_x=get_location_x(info)
         loc_y=get_location_y(info)
-        Store.objects.create(name=place, loc_x=loc_x ,loc_y=loc_y)
+        Store.objects.create(name=store, loc_x=loc_x ,loc_y=loc_y)
+    
+    #식후건 리스트에서 삭제된 가게 삭제
+    for store in delete_list:
+        Store.objects.filter(name=store).delete()
+        
         
 # Create your views here.
 @csrf_exempt
@@ -27,9 +45,9 @@ def dataParsing(request):
     
     # response=json.loads(request.body)
     
-    places=get_sikugeon_list()
+    stores=get_sikugeon_list()
     
-    serviceWorker(places)
+    serviceWorker(stores)
     
     result = {
         "version": "2.0",
