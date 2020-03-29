@@ -6,8 +6,18 @@ from django.shortcuts import render
 import json
 from django.views.decorators.csrf import csrf_exempt
 from .parser import get_sikugeon_list
+from .kakaomap import *
+from app.models import Store
 
 
+#비동기 처리를 위해서
+def serviceWorker(places):
+    for place in places:
+        info=get_store_info(place)
+        loc_x=get_location_x(info)
+        loc_y=get_location_y(info)
+        Store.objects.create(name=place, loc_x=loc_x ,loc_y=loc_y)
+        
 # Create your views here.
 @csrf_exempt
 def dataParsing(request):
@@ -16,6 +26,8 @@ def dataParsing(request):
     # response=json.loads(request.body)
     
     places=get_sikugeon_list()
+    
+    serviceWorker(places)
     
     result = {
         "version": "2.0",
