@@ -81,22 +81,36 @@ def reply(request):
     near_store = [store for store in stores
                  if haversine(user, (store.loc_y, store.loc_x)) <= 4]
     
-    result=[]
+    sikugeon=[]
     for store in near_store:
-        result.append(store.name)
-    str1=''.join(result)
-    
-    result = {
-        "version": "2.0",
-        "template": {
-            "outputs": [
-                {
-                    "simpleText": {
-                        "text": str1
-                    }
-                }
-            ]
+        if len(sikugeon)>10:
+            break
+        temp={
+           "title": store.name,
+           "description":"식후건 메모",
+           "thumbnail":{
+              "imageUrl":"http://k.kakaocdn.net/dn/83BvP/bl20duRC1Q1/lj3JUcmrzC53YIjNDkqbWK/i_6piz1p.jpg"
+           },
+           "buttons":[
+            {
+             "action":"webLink",
+             "label":"식후건 인스타 리뷰 보기",
+             "webLinkUrl":"https://e.kakao.com/t/hello-ryan"
+            }
+           ]
         }
-    }
+        sikugeon.append(temp)
+    
+    
+    
+
+    
+    
+    result = {'version': '2.0',
+            'template': {'outputs': [{'carousel': {'type': 'basicCard',
+            'items': sikugeon}}]}}
+    
+    
+    
 
     return JsonResponse(result, status=200)
