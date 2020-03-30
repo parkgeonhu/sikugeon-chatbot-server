@@ -36,7 +36,7 @@ def get_driver():
 
     chrome_options.add_argument('--disable-dev-shm-usage')
    
-    driver = webdriver.Chrome('/workspace/sikugeon_bot/util/chromedriver', chrome_options=chrome_options)
+    driver = webdriver.Chrome('./util/chromedriver', chrome_options=chrome_options)
 
     driver.get('about:blank')
     driver.execute_script("Object.defineProperty(navigator, 'plugins', {get: function() {return[1, 2, 3, 4, 5];},});")
