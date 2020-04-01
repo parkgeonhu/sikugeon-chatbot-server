@@ -17,8 +17,9 @@ def get_location_info(query):
     url = 'https://dapi.kakao.com/v2/local/search/address.json?query='+query
     headers = {'Authorization':'KakaoAK '+os.environ['kakaotoken']}
     response = requests.get(url, headers = headers)
-    result = json.loads(response.text)
-    return result
+    info = json.loads(response.text)
+    print(query+' '+str(info))
+    return info
 
 def get_location_x(info):
     return info["documents"][0]['x']
