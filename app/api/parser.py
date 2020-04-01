@@ -52,16 +52,31 @@ def get_sikugeon_list():
         )
     soup = BeautifulSoup(dialog.get_attribute('innerHTML'), 'lxml')
 
-    entire = soup.find_all('a', class_= 'link_txt')
+    bundles = soup.find_all('div', class_= 'FavoriteInformationBundle')
+    
+    stores=[]
 
-    places=[]
+    for bundle in bundles:
+        temp = BeautifulSoup(str(bundle), 'lxml')
+        address= temp.find('span', class_= 'desc_region')
+        name=temp.find('a', class_= 'link_txt')
+        detail=temp.find('p', class_= 'desc_detail')
 
-    for place in entire:
-        print(place.text)
-        places.append(place.text)
-    print(len(places))
-    return places
-##    print(dialog.get_attribute('innerHTML'))
+        memo=""
+        if detail is not None:
+            memo=detail.text
+            
+        data={
+            'name' : name.text,
+            'address' : address.text,
+            'memo' : memo
+            }
+        stores.append(data)
+    
+    for store in stores:
+        print(store.get('name')+' '+store.get('address')+' '+store.get('memo'))
+
+    return stores
 
 
 def export_data(data, name):
