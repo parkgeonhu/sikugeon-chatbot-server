@@ -28,9 +28,10 @@ def serviceWorker(stores):
             query=address[address.find('(')+1:address.find(')')]
             memo=store['memo']
             info=get_store_info(query+name)
+            place_url=get_location_url(info)
             loc_x=get_location_x(info)
             loc_y=get_location_y(info)
-            Store.objects.create(name=name, street_address=address, memo=memo ,loc_x=loc_x ,loc_y=loc_y)
+            Store.objects.create(name=name, street_address=address, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
         
         # local store에 store.name이 있으면 local store에서 그 요소를 삭제
         else:
@@ -122,6 +123,11 @@ def reply(request):
              "action":"webLink",
              "label":"식후건 인스타 리뷰 보기",
              "webLinkUrl":"https://e.kakao.com/t/hello-ryan"
+            },
+            {
+             "action":"webLink",
+             "label":"카카오맵으로 연결",
+             "webLinkUrl": store.place_url
             }
            ]
         }

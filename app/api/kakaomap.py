@@ -27,5 +27,7 @@ def get_location_x(info):
 def get_location_y(info):
     return info["documents"][0]['y']
 
+def get_location_url(info):
+    return info["documents"][0]['place_url']
 
     
