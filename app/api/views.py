@@ -7,6 +7,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from .parser import get_sikugeon_list
 from .kakaomap import *
+from .image_parser import *
 from app.models import Store
 from haversine import haversine
 
@@ -25,13 +26,19 @@ def serviceWorker(stores):
             create_list_idx.append(idx)
             name=store['name']
             address=store['address']
-            query=address[address.find('(')+1:address.find(')')]
+            query=address[address.find('(')+1:address.find(')')]+name
             memo=store['memo']
-            info=get_store_info(query+name)
+            
+            #네이버 이미지 검색 파싱
+            pic_url = get_image_url(query=name)
+            
+            
+            #카카오맵 파싱
+            info=get_store_info(query)
             place_url=get_location_url(info)
             loc_x=get_location_x(info)
             loc_y=get_location_y(info)
-            Store.objects.create(name=name, street_address=address, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
+            Store.objects.create(name=name, street_address=address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
         
         # local store에 store.name이 있으면 local store에서 그 요소를 삭제
         else:
@@ -116,7 +123,7 @@ def reply(request):
            "title": store.name,
            "description":"식후건 메모",
            "thumbnail":{
-              "imageUrl":"http://k.kakaocdn.net/dn/83BvP/bl20duRC1Q1/lj3JUcmrzC53YIjNDkqbWK/i_6piz1p.jpg"
+              "imageUrl":store.pic_url
            },
            "buttons":[
             {
