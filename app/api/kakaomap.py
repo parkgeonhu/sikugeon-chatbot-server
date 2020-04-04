@@ -21,6 +21,12 @@ def get_location_info(query):
     print(query+' '+str(info))
     return info
 
+def get_location_name(info):
+    return info["documents"][0]['place_name']
+
+def get_location_address(info):
+    return info["documents"][0]['road_address_name']
+
 def get_location_x(info):
     return info["documents"][0]['x']
 

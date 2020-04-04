@@ -8,46 +8,48 @@ from django.views.decorators.csrf import csrf_exempt
 from .parser import get_sikugeon_list
 from .kakaomap import *
 from .image_parser import *
+from .instagram_parser import *
 from app.models import Store
 from haversine import haversine
 
-#비동기 처리를 위해서
-def serviceWorker(stores):
-    local_store=[]
+
+# #비동기 처리를 위해서
+# def serviceWorker(stores):
+#     local_store=[]
     
-    # db에 있는 Store 데이터
-    for store in Store.objects.all():
-        local_store.append(store.name)
+#     # db에 있는 Store 데이터
+#     for store in Store.objects.all():
+#         local_store.append(store.name)
     
-    create_list_idx=[]
-    for idx, store in enumerate(stores):
-        # local store에 store.name이 없는 경우
-        if store['name'] not in local_store:
-            create_list_idx.append(idx)
-            name=store['name']
-            address=store['address']
-            query=address[address.find('(')+1:address.find(')')]+name
-            memo=store['memo']
+#     create_list_idx=[]
+#     for idx, store in enumerate(stores):
+#         # local store에 store.name이 없는 경우
+#         if store['name'] not in local_store:
+#             create_list_idx.append(idx)
+#             name=store['name']
+#             address=store['address']
+#             query=address[address.find('(')+1:address.find(')')]+name
+#             memo=store['memo']
             
-            #네이버 이미지 검색 파싱
-            pic_url = get_image_url(query=name)
+#             #네이버 이미지 검색 파싱
+#             pic_url = get_image_url(query=name)
             
             
-            #카카오맵 파싱
-            info=get_store_info(query)
-            place_url=get_location_url(info)
-            loc_x=get_location_x(info)
-            loc_y=get_location_y(info)
-            Store.objects.create(name=name, street_address=address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
+#             #카카오맵 파싱
+#             info=get_store_info(query)
+#             place_url=get_location_url(info)
+#             loc_x=get_location_x(info)
+#             loc_y=get_location_y(info)
+#             Store.objects.create(name=name, street_address=address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
         
-        # local store에 store.name이 있으면 local store에서 그 요소를 삭제
-        else:
-            del_index=local_store.index(store['name'])
-            del local_store[del_index]
+#         # local store에 store.name이 있으면 local store에서 그 요소를 삭제
+#         else:
+#             del_index=local_store.index(store['name'])
+#             del local_store[del_index]
     
-    #식후건 리스트에서 삭제된 가게 삭제
-    for store in local_store:
-        Store.objects.filter(name=store).delete()
+#     #식후건 리스트에서 삭제된 가게 삭제
+#     for store in local_store:
+#         Store.objects.filter(name=store).delete()
         
         
         
@@ -70,7 +72,26 @@ def serviceWorker(stores):
 #     #식후건 리스트에서 삭제된 가게 삭제
 #     for store in delete_list:
 #         Store.objects.filter(name=store).delete()
-        
+
+
+def update_data():
+    payload=get_payload()
+    stores=get_stores(payload)
+                #카카오맵 파싱
+    for store in stores:
+        memo=''
+        query=store['query']
+        pic_url=store['pic_url']
+        info=get_store_info(query)
+        name=get_location_name(info)
+        street_address=get_location_address(info)
+        place_url=get_location_url(info)
+        loc_x=get_location_x(info)
+        loc_y=get_location_y(info)
+        Store.objects.create(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
+    
+    
+    
         
 # Create your views here.
 @csrf_exempt
@@ -78,11 +99,10 @@ def dataParsing(request):
     print(request.body.decode('utf-8'))
     
     # response=json.loads(request.body)
-    
-    stores=get_sikugeon_list()
 
     
-    serviceWorker(stores)
+    
+    update_data()
     
     result = {
         "version": "2.0",
