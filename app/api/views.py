@@ -82,13 +82,14 @@ def update_data():
         memo=''
         query=store['query']
         pic_url=store['pic_url']
+        shortcode=store['shortcode']
         info=get_store_info(query)
         name=get_location_name(info)
         street_address=get_location_address(info)
         place_url=get_location_url(info)
         loc_x=get_location_x(info)
         loc_y=get_location_y(info)
-        Store.objects.create(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y)
+        Store.objects.create_store(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y, shortcode=shortcode)
     
     
     
@@ -149,7 +150,7 @@ def reply(request):
             {
              "action":"webLink",
              "label":"식후건 인스타 리뷰 보기",
-             "webLinkUrl":"https://e.kakao.com/t/hello-ryan"
+             "webLinkUrl": store.review_url
             },
             {
              "action":"webLink",

@@ -14,11 +14,13 @@ def get_next_page(query_hash, user_id, has_next_page, end_cursor, payload):
         for post in timeline:
             text=post['node']['edge_media_to_caption']['edges'][0]['node']['text']
             pic_url=post['node']['display_url']
+            shortcode=post['node']['shortcode']
             tags=''
             idx=text.find('#식후건')
             if idx != -1:
                 tags=text[idx:]
                 data={
+                    'shortcode': shortcode,
                     'pic_url' : pic_url,
                     'tags' : tags
                 }
@@ -46,6 +48,7 @@ def get_payload():
     for post in profile['graphql']['user']['edge_owner_to_timeline_media']['edges']:
         text=post['node']['edge_media_to_caption']['edges'][0]['node']['text']
         pic_url=post['node']['display_url']
+        shortcode=post['node']['shortcode']
     
         tags=''
         idx=text.find('#식후건')
@@ -53,6 +56,7 @@ def get_payload():
         if idx != -1:
             tags=text[idx:]
             data={
+                'shortcode': shortcode,
                 'pic_url' : pic_url,
                 'tags' : tags
             }
@@ -79,15 +83,18 @@ def get_payload():
     return payload
 
 
-def get_stores(posts: list):
+# 추후 태그 분리할 때 여기를 수정
+def get_stores(payload: list):
     stores=[]
-    for post in posts:
+    for post in payload:
         tags=post['tags'].split(' ')
         # #식후건_남영동_모범식당 #식후건_메모_example
         place=tags[0].split('_')
         query=place[1]+' '+place[2]
         pic_url=post['pic_url']
+        shortcode=post['shortcode']
         data={
+            'shortcode': shortcode,
             'query' : query,
             'pic_url' : pic_url
         }
