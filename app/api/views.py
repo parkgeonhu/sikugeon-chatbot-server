@@ -144,15 +144,18 @@ def reply(request):
     
     response=json.loads(request.body)
     
-    location=response["action"]["params"]["location"]
-    info=get_location_info(location)
+    # location=response["action"]["params"]["location"]
+    
+    #user request 원문 그대로 사용 // 추후에 지역만 걸러주는 것을 생각해보자
+    location=response['userRequest']['utterance']
+    info=get_store_info(location)
     user_x=get_location_x(info)
     user_y=get_location_y(info)
     
     user=(float(user_y), float(user_x))
     stores=Store.objects.all()
     near_store = [store for store in stores
-                 if haversine(user, (store.loc_y, store.loc_x)) <= 4]
+                 if haversine(user, (store.loc_y, store.loc_x)) <= 3]
     
     sikugeon=[]
     for store in near_store:
@@ -180,15 +183,27 @@ def reply(request):
         sikugeon.append(temp)
     
     
-    
+    result=''
 
-    
-    
-    result = {'version': '2.0',
+    #맛집이 근처에 없다면
+    if len(near_store) == 0:
+           result = {
+               "version": "2.0",
+               "template": {
+                   "outputs": [
+                       {
+                           "simpleText": {
+                               "text": "근처에 맛집이 없네요 ㅠㅠ"
+                           }
+                       }
+                   ]
+               }
+           }
+            
+    #있으면 데이터 넣어주기
+    else :
+        result = {'version': '2.0',
             'template': {'outputs': [{'carousel': {'type': 'basicCard',
             'items': sikugeon}}]}}
-    
-    
-    
 
     return JsonResponse(result, status=200)
