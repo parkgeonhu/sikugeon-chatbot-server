@@ -147,7 +147,9 @@ def reply(request):
     # location=response["action"]["params"]["location"]
     
     #user request 원문 그대로 사용 // 추후에 지역만 걸러주는 것을 생각해보자
-    location=response['userRequest']['utterance']
+    #location=response['userRequest']['utterance']
+    location=response["action"]["params"]["location"]
+    
     info=get_store_info(location)
     user_x=get_location_x(info)
     user_y=get_location_y(info)
@@ -193,7 +195,7 @@ def reply(request):
                    "outputs": [
                        {
                            "simpleText": {
-                               "text": "근처에 맛집이 없네요 ㅠㅠ"
+                               "text": location
                            }
                        }
                    ]
