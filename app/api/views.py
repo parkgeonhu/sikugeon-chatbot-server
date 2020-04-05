@@ -195,7 +195,7 @@ def reply(request):
                    "outputs": [
                        {
                            "simpleText": {
-                               "text": location
+                               "text": "근처에 맛집이 없어요 ㅠㅠ"
                            }
                        }
                    ]
