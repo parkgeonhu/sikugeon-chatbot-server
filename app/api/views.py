@@ -78,11 +78,26 @@ def update_data():
     payload=get_payload()
     stores=get_stores(payload)
                 #카카오맵 파싱
+    #기존에 저장되어 있던 store shortcode 불러오기
+    local_shortcodes=[]
+    
+    for store in Store.objects.all():
+
+        local_shortcodes.append(store.shortcode)
+        
+    
     for store in stores:
         memo=''
         query=store['query']
         pic_url=store['pic_url']
         shortcode=store['shortcode']
+        
+        if shortcode in local_shortcodes:
+            #origin store의 shortcode
+            del_index=local_shortcodes.index(shortcode)
+            del local_shortcodes[del_index]
+            continue
+        
         info=get_store_info(query)
         name=get_location_name(info)
         street_address=get_location_address(info)
@@ -90,11 +105,14 @@ def update_data():
         loc_x=get_location_x(info)
         loc_y=get_location_y(info)
         Store.objects.create_store(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y, shortcode=shortcode)
-    
-    
-    
         
-# Create your views here.
+        
+    #origin list와 local list 비교해서, local list에 남아있는 것은 삭제
+    for shortcode in local_shortcodes:
+        Store.objects.filter(shortcode=shortcode).delete()    
+            
+            
+
 @csrf_exempt
 def dataParsing(request):
     print(request.body.decode('utf-8'))
