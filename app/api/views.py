@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.shortcuts import render
 import json
 from django.views.decorators.csrf import csrf_exempt
-from .parser import get_sikugeon_list
 from .kakaomap import *
 from .image_parser import *
 from .instagram_parser import *
@@ -159,11 +158,11 @@ def reply(request):
     near_store = [store for store in stores
                  if haversine(user, (store.loc_y, store.loc_x)) <= 3]
     
-    sikugeon=[]
+    items=[]
     for store in near_store:
-        if len(sikugeon)>10:
+        if len(items)>10:
             break
-        temp={
+        item={
            "title": store.name,
            "description":"식후건 메모",
            "thumbnail":{
@@ -182,7 +181,7 @@ def reply(request):
             }
            ]
         }
-        sikugeon.append(temp)
+        items.append(item)
     
     
     result=''
@@ -206,6 +205,6 @@ def reply(request):
     else :
         result = {'version': '2.0',
             'template': {'outputs': [{'carousel': {'type': 'basicCard',
-            'items': sikugeon}}]}}
+            'items': items}}]}}
 
     return JsonResponse(result, status=200)
