@@ -21,19 +21,56 @@ def get_location_info(query):
     print(query+' '+str(info))
     return info
 
-def get_location_name(info):
-    return info["documents"][0]['place_name']
+class InfoEntity:
+    def __init__(self, info):
+        self.info = info
+        
+    def get_name(self):
+        return self.info["documents"][0]['place_name']
+    
+    def get_address(self):
+        return self.info["documents"][0]['road_address_name']
+    
+    def get_x(self):
+        return self.info["documents"][0]['x']
 
-def get_location_address(info):
-    return info["documents"][0]['road_address_name']
+    def get_y(self):
+        return self.info["documents"][0]['y']
+    
+    def get_url(self):
+        return self.info["documents"][0]['place_url']
 
-def get_location_x(info):
-    return info["documents"][0]['x']
 
-def get_location_y(info):
-    return info["documents"][0]['y']
+# def get_location_name(info):
+#     return info["documents"][0]['place_name']
 
-def get_location_url(info):
-    return info["documents"][0]['place_url']
+# def get_location_address(info):
+#     return info["documents"][0]['road_address_name']
+
+# def get_location_x(info):
+#     return info["documents"][0]['x']
+
+# def get_location_y(info):
+#     return info["documents"][0]['y']
+
+# def get_location_url(info):
+#     return info["documents"][0]['place_url']
+
+# def get_location_category_group_name(info):
+#     pass
+
+# if __name__ == '__main__':
+#     info={
+#         "documents" : [
+#             {
+#                 "place_name" : "hello",
+#                 "x" : 3,
+#                 "y" : 3,
+#             }
+#         ]
+#     }
+#     entity=InfoEntity(info)
+#     print(entity.get_name())
+    
 
     

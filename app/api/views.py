@@ -6,7 +6,7 @@ from django.shortcuts import render
 import json
 from django.views.decorators.csrf import csrf_exempt
 from .kakaomap import *
-from .image_parser import *
+# from .image_parser import *
 from .instagram_parser import *
 from app.models import Store
 from haversine import haversine
@@ -98,11 +98,13 @@ def update_data():
             continue
         
         info=get_store_info(query)
-        name=get_location_name(info)
-        street_address=get_location_address(info)
-        place_url=get_location_url(info)
-        loc_x=get_location_x(info)
-        loc_y=get_location_y(info)
+        place=InfoEntity(info)
+        name=place.get_name()
+        street_address=place.get_address()
+        place_url=place.get_url()
+        loc_x=place.get_x()
+        loc_y=place.get_y()
+        
         Store.objects.create_store(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y, shortcode=shortcode)
         
         
