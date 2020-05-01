@@ -39,25 +39,13 @@ class InfoEntity:
     
     def get_url(self):
         return self.info["documents"][0]['place_url']
+    
+    def get_category_group(self):
+        return self.info["documents"][0]['category_group_name']
+    
+    def get_category(self):
+        return self.info["documents"][0]['category_name']
 
-
-# def get_location_name(info):
-#     return info["documents"][0]['place_name']
-
-# def get_location_address(info):
-#     return info["documents"][0]['road_address_name']
-
-# def get_location_x(info):
-#     return info["documents"][0]['x']
-
-# def get_location_y(info):
-#     return info["documents"][0]['y']
-
-# def get_location_url(info):
-#     return info["documents"][0]['place_url']
-
-# def get_location_category_group_name(info):
-#     pass
 
 # if __name__ == '__main__':
 #     info={
