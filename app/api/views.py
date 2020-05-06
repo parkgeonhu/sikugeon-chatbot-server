@@ -152,8 +152,11 @@ def reply(request):
     location=response["action"]["params"]["location"]
     
     info=get_store_info(location)
-    user_x=get_location_x(info)
-    user_y=get_location_y(info)
+    
+    temp=InfoEntity(info)
+    
+    user_x=temp.get_x()
+    user_y=temp.get_y()
     
     user=(float(user_y), float(user_x))
     stores=Store.objects.all()
