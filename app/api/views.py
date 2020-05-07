@@ -245,6 +245,7 @@ def get_place_based_hashtag(request):
            }
         return JsonResponse(result, status=200)
     else:
+        pass
         
     
     
@@ -277,7 +278,7 @@ def get_place_based_hashtag(request):
 
     #맛집이 근처에 없다면
     if len(near_store) == 0:
-           
+        pass
             
     #있으면 데이터 넣어주기
     else :

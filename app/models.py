@@ -15,8 +15,8 @@ class Store(models.Model):
     pic_url = models.URLField(max_length = 200, blank=True)
     review_url = models.URLField(max_length = 200, blank=True)
     shortcode = models.CharField(max_length=64, blank=True, help_text='가게를 구별할 수 있는 unique 코드, instagram/p/{shortcode}')
-    loc_x = models.FloatField(blank=True)
-    loc_y = models.FloatField(blank=True)
+    loc_x = models.FloatField(null=True)
+    loc_y = models.FloatField(null=True)
     memo = models.TextField(help_text='식후건 리뷰', blank=True)
     
     objects = StoreManager()
