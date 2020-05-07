@@ -32,8 +32,11 @@ jobs:
       run: |
         import os
         os.environ['kakaotoken']='$KAKAO_TOKEN'
+        print(os.environ['kakaotoken'])
       shell: python
             
     - name: Run Tests
       run: |
+        python manage.py makemigrations app
+        python manage.py migrate
         pytest
