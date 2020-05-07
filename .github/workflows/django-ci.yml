@@ -31,8 +31,7 @@ jobs:
         KAKAO_TOKEN : ${{ secrets.KAKAO_TOKEN }}
       run: |
         import os
-        os.environ['kakaotoken']="$KAKAO_TOKEN"
-        print(os.environ['kakaotoken'])
+        print(os.environ['KAKAO_TOKEN'])
       shell: python
             
     - name: Run Tests
