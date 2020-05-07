@@ -1,8 +1,6 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ master, develop, release ]
   pull_request:
     branches: [ master, develop, release ]
 
@@ -29,9 +27,11 @@ jobs:
         pip install -r requirements.txt
     
     - name: Set environment
+      env:
+        KAKAO_TOKEN : ${{ secrets.KAKAO_TOKEN }}
       run: |
         import os
-        os.environ['kakaotoken']=${{ secrets.KAKAO_TOEKN }}
+        os.environ['kakaotoken']=$KAKAO_TOKEN
       shell: python
             
     - name: Run Tests
