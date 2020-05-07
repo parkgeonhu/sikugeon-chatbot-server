@@ -28,7 +28,7 @@ jobs:
     
     - name: Set environment
       env:
-        KAKAO_TOKEN : ${{ secrets.KAKAO_TOKEN }}
+        kakaotoken : ${{ secrets.KAKAO_TOKEN }}
       run: |
         import os
         print(os.environ['kakaotoken'])
