@@ -31,11 +31,13 @@ jobs:
         KAKAO_TOKEN : ${{ secrets.KAKAO_TOKEN }}
       run: |
         import os
-        print(os.environ['KAKAO_TOKEN'])
+        print(os.environ['kakaotoken'])
       shell: python
             
     - name: Run Tests
+      env:
+        kakaotoken : ${{ secrets.KAKAO_TOKEN }}      
       run: |
-        python manage.py makemigrations app
-        python manage.py migrate
+        python manage.py makemigrations app --settings=sikugeon_bot.settings_ex
+        python manage.py migrate --settings=sikugeon_bot.settings_ex
         pytest
