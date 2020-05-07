@@ -1,8 +1,6 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ master, develop, release ]
   pull_request:
     branches: [ master, develop, release ]
 
@@ -29,11 +27,17 @@ jobs:
         pip install -r requirements.txt
     
     - name: Set environment
+      env:
+        kakaotoken : ${{ secrets.KAKAO_TOKEN }}
       run: |
         import os
-        os.environ['kakaotoken']=${{ secrets.KAKAO_TOEKN }}
+        print(os.environ['kakaotoken'])
       shell: python
             
     - name: Run Tests
+      env:
+        kakaotoken : ${{ secrets.KAKAO_TOKEN }}      
       run: |
+        python manage.py makemigrations app --settings=sikugeon_bot.settings_ex
+        python manage.py migrate --settings=sikugeon_bot.settings_ex
         pytest
