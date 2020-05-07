@@ -12,6 +12,8 @@ from app.models import Store
 from haversine import haversine
 
 
+import re
+
 # #비동기 처리를 위해서
 # def serviceWorker(stores):
 #     local_store=[]
@@ -205,6 +207,78 @@ def reply(request):
                    ]
                }
            }
+            
+    #있으면 데이터 넣어주기
+    else :
+        result = {'version': '2.0',
+            'template': {'outputs': [{'carousel': {'type': 'basicCard',
+            'items': items}}]}}
+
+    return JsonResponse(result, status=200)
+
+
+
+@csrf_exempt
+def get_place_based_hashtag(request):
+    print(request.body.decode('utf-8'))
+    
+    response=json.loads(request.body)
+    
+    # location=response["action"]["params"]["location"]
+    
+    #user request 원문 그대로 사용 // 추후에 지역만 걸러주는 것을 생각해보자
+    utterance=response['userRequest']['utterance']
+
+    p=re.compile('#[a-z,0-9,가-힣]+')
+    if p.match(utterance) is None:
+        result = {
+               "version": "2.0",
+               "template": {
+                   "outputs": [
+                       {
+                           "simpleText": {
+                               "text": "해시태그 형식에 맞게 입력해주세요."
+                           }
+                       }
+                   ]
+               }
+           }
+        return JsonResponse(result, status=200)
+    else:
+        pass
+        
+    
+    
+    for store in near_store:
+        if len(items)>10:
+            break
+        item={
+           "title": store.name,
+           "description":"식후건 메모",
+           "thumbnail":{
+              "imageUrl":store.pic_url
+           },
+           "buttons":[
+            {
+             "action":"webLink",
+             "label":"식후건 인스타 리뷰 보기",
+             "webLinkUrl": store.review_url
+            },
+            {
+             "action":"webLink",
+             "label":"카카오맵으로 연결",
+             "webLinkUrl": store.place_url
+            }
+           ]
+        }
+        items.append(item)
+    
+    
+    result=''
+
+    #맛집이 근처에 없다면
+    if len(near_store) == 0:
+        pass
             
     #있으면 데이터 넣어주기
     else :
