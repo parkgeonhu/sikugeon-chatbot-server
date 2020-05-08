@@ -10,10 +10,38 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
+import os, json
+
 # 카카오맵 토큰 발급 받으세요.
 # os.environ['kakaotoken']='PUT YOUR KAKAO TOKEN'
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+
+"""
+pytest용 kakaotoken 불러오기 시작
+"""
+secret_file = 'secrets.json' # secrets.json 파일 위치를 명시
+
+def get_secret(setting, secrets):
+    """비밀 변수를 가져오거나 명시적 예외를 반환한다."""
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+try:
+    with open(secret_file) as f:
+        secrets = json.loads(f.read())
+    KAKAO_TOKEN = get_secret("KAKAO_TOKEN", secrets)
+    os.environ['kakaotoken']=KAKAO_TOKEN
+except FileNotFoundError:
+    pass
+
+"""
+pytest용 kakaotoken 불러오기 끝 
+"""
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 

@@ -39,3 +39,4 @@ docker/.data/
 mockingjay.sqlite3
 goorm.manifest
 .temp
+secrets.json
