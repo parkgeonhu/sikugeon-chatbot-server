@@ -13,7 +13,7 @@ import requests
 authtokens = tuple()
 
 instagram_root = "https://www.instagram.com"
-post_set={}
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -78,8 +78,8 @@ def get_query_id(doc):
                     query_ids.append(query_id)
     return query_ids
 
-def extract_recent_tag(tag):
-
+def get_post(tag):
+    post_set={}
     url_string = "https://www.instagram.com/explore/tags/%s/" % tag
     response = bs4.BeautifulSoup(requests.get(url_string).text, "html.parser")
     potential_query_ids = get_query_id(response)
@@ -131,16 +131,18 @@ def extract_recent_tag(tag):
             post_set[owner_id].append(node['node'])
         cnt+=1
         print(cnt)
+        
+    return post_set
 
 
-if __name__ == '__main__':
-    extract_recent_tag("구파발맛집")
-    ordering_sequence=[]
-    for key in post_set:
-        ordering_sequence.append((key,len(post_set[key]), useridToUsername(key)))
-    ordering_sequence.sort(key = lambda element : element[1], reverse=True)
+# if __name__ == '__main__':
+#     extract_recent_tag("구파발맛집")
+#     ordering_sequence=[]
+#     for key in post_set:
+#         ordering_sequence.append((key,len(post_set[key]), useridToUsername(key)))
+#     ordering_sequence.sort(key = lambda element : element[1], reverse=True)
     
-    with open(os.path.join(BASE_DIR, 'result.json'), 'w+', encoding='utf8') as f:
-        res=sorted(post_set.items(), key=lambda element : len(element[1]), reverse=True)
-        f.write(str(res))
+#     with open(os.path.join(BASE_DIR, 'result.json'), 'w+', encoding='utf8') as f:
+#         res=sorted(post_set.items(), key=lambda element : len(element[1]), reverse=True)
+#         f.write(str(res))
 

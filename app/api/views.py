@@ -6,10 +6,12 @@ from django.shortcuts import render
 import json
 from django.views.decorators.csrf import csrf_exempt
 from .kakaomap import *
-# from .image_parser import *
+from .tag_search import *
 from .instagram_parser import *
 from app.models import Store
 from haversine import haversine
+
+
 
 
 import re
@@ -217,6 +219,46 @@ def reply(request):
     return JsonResponse(result, status=200)
 
 
+def hash_search(posts_set):
+        posts_set_sorted=[]
+        for key in posts_set:
+            post={
+                'userid' : key,
+                'count' : len(posts_set[key])
+            }
+            posts_set_sorted.append(post)
+        posts_set_sorted.sort(key = lambda element : element['count'], reverse=True)
+        
+        items=[]
+        cnt=0
+        for post in posts_set_sorted:
+            if cnt==10:
+                break
+            post['username']=useridToUsername(post['userid'])
+            post['url']="https://instagram.com/"+post['username']
+
+            item={
+                "title": post['username'],
+               "description":"게시물 개수 : "+str(post['count']),
+               "thumbnail":{
+                  "imageUrl":post['url']
+               },
+               "buttons":[
+                {
+                 "action":"webLink",
+                 "label":"인스타 정보 확인하기",
+                 "webLinkUrl": post['url']
+                }
+               ]
+            }
+            items.append(item)
+            cnt+=1
+        
+        result = {'version': '2.0',
+            'template': {'outputs': [{'carousel': {'type': 'basicCard',
+            'items': items}}]}}
+        return result
+
 
 @csrf_exempt
 def get_place_based_hashtag(request):
@@ -229,8 +271,16 @@ def get_place_based_hashtag(request):
     #user request 원문 그대로 사용 // 추후에 지역만 걸러주는 것을 생각해보자
     utterance=response['userRequest']['utterance']
 
-    p=re.compile('#[a-z,0-9,가-힣]+')
-    if p.match(utterance) is None:
+    p=re.compile('#([a-z,0-9,가-힣]+)')
+
+    # with open(os.path.join(BASE_DIR, 'result.json'), 'w+', encoding='utf8') as f:
+    #     res=sorted(post_set.items(), key=lambda element : len(element[1]), reverse=True)
+    #     f.write(str(res))
+    
+    hashtags=p.findall(utterance)
+    result={}
+    
+    if hashtags==[]:
         result = {
                "version": "2.0",
                "template": {
@@ -243,47 +293,9 @@ def get_place_based_hashtag(request):
                    ]
                }
            }
-        return JsonResponse(result, status=200)
-    else:
-        pass
         
-    
-    
-    for store in near_store:
-        if len(items)>10:
-            break
-        item={
-           "title": store.name,
-           "description":"식후건 메모",
-           "thumbnail":{
-              "imageUrl":store.pic_url
-           },
-           "buttons":[
-            {
-             "action":"webLink",
-             "label":"식후건 인스타 리뷰 보기",
-             "webLinkUrl": store.review_url
-            },
-            {
-             "action":"webLink",
-             "label":"카카오맵으로 연결",
-             "webLinkUrl": store.place_url
-            }
-           ]
-        }
-        items.append(item)
-    
-    
-    result=''
-
-    #맛집이 근처에 없다면
-    if len(near_store) == 0:
-        pass
-            
-    #있으면 데이터 넣어주기
-    else :
-        result = {'version': '2.0',
-            'template': {'outputs': [{'carousel': {'type': 'basicCard',
-            'items': items}}]}}
+    else:
+        posts_set=get_post(hashtags[0])
+        result=hash_search(posts_set)
 
     return JsonResponse(result, status=200)
