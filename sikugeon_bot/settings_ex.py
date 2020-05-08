@@ -21,7 +21,7 @@ pytest용 kakaotoken 불러오기 시작
 """
 secret_file = 'secrets.json' # secrets.json 파일 위치를 명시
 
-def get_secret(setting, secrets=secrets):
+def get_secret(setting, secrets):
     """비밀 변수를 가져오거나 명시적 예외를 반환한다."""
     try:
         return secrets[setting]
@@ -32,7 +32,7 @@ def get_secret(setting, secrets=secrets):
 try:
     with open(secret_file) as f:
         secrets = json.loads(f.read())
-    KAKAO_TOKEN = get_secret("KAKAO_TOKEN")
+    KAKAO_TOKEN = get_secret("KAKAO_TOKEN", secrets)
     os.environ['kakaotoken']=KAKAO_TOKEN
 except FileNotFoundError:
     pass
