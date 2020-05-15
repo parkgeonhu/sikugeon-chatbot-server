@@ -43,3 +43,4 @@ secrets.json
 
 redis-stable
 dump.rdb
+static
