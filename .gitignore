@@ -42,3 +42,4 @@ goorm.manifest
 secrets.json
 
 redis-stable
+dump.rdb

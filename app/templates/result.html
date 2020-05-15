@@ -1,5 +1,8 @@
 {% load static %}
 <!doctype html>
+
+
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -50,23 +53,24 @@
 
   <div class="album py-5 bg-light">
     <div class="container">
-    
-    {% block content %}
-      <div class="row">
-<h1>{{ section.title }}</h1>
-          
+        {% if is_loading %}
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        {% else %}
+
+        <div class="row">  
 {% for q in qs %}
     <div class="col-md-4">
           <div class="card mb-4 shadow-sm">
             <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
             <div class="card-body">
               <p class="card-text">{{ q }}</p>
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-co    ntent-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" onclick="location.href='{{q.thumbnail.imageUrl}}'" class="btn btn-sm btn-outline-secondary">View {{q.title}} </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <button type="button" onclick="location.href='{{q.thumbnail.imageUrl}}'" class="btn btn-sm btn-outline-secondary">인스타 링크로 연결</button>
                 </div>
-                <small class="text-muted">9 mins</small>
+                <small class="text-muted">{{ q.description }}</small>
               </div>
             </div>
           </div>
@@ -75,6 +79,10 @@
 
 
       </div>
+        {% endif %}
+        
+        
+
     </div>
   </div>
 
@@ -92,5 +100,4 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="../assets/dist/js/bootstrap.bundle.js"></script></body>
 </html>
-{% endblock %}
 

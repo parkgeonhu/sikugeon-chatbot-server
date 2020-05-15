@@ -10,12 +10,12 @@ from .tag_search import *
 from .instagram_parser import *
 from app.models import Store, HashTag
 from haversine import haversine
-from django.views.generic import TemplateView
+from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 
 from app.tasks import hash_task
-
+from django.http import HttpResponseNotFound
 
 
 import re
@@ -81,20 +81,24 @@ import re
 #         Store.objects.filter(name=store).delete()
 
 
-class ResultView(TemplateView):
-    template_name = "result.html"
+class ResultView(View):
+    # template_name = "result.html"
     
     def get_shortcode(self):
         shortcode=self.kwargs['shortcode']
         return shortcode
     
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
         hashtag=get_object_or_404(HashTag, shortcode=self.get_shortcode())
-        context = super(ResultView, self).get_context_data(**kwargs)
-        #= "http://%s/%s" % (get_current_site(self.request), self.get_shortcode())
-        context["qs"] = json.loads(hashtag.data)
-        return context
-    
+        context={}
+        isloading=False
+        if hashtag.data=="":
+            isloading=True
+            # return HttpResponseNotFound("hello")
+        else:
+            context["qs"] = json.loads(hashtag.data)
+        context["is_loading"]=isloading
+        return render(request, "result.html", context=context)
     
 
 
