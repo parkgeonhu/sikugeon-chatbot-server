@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 
 class StoreManager(models.Manager):
@@ -6,6 +7,25 @@ class StoreManager(models.Manager):
         store = self.create(name=name, street_address=street_address, pic_url = pic_url, place_url=place_url ,memo=memo ,loc_x=loc_x ,loc_y=loc_y, shortcode=shortcode)
         store.create_review_url()
         # do something with the book
+        
+        
+class HashTag(models.Model):
+    name = models.CharField(max_length=64, help_text='검색한 해시태그')
+    data = models.TextField(help_text='처리된 데이터 저장(json)', blank=True)
+    shortcode = models.CharField(max_length=64, blank=True, help_text='결과값 구별코드')
+    
+    def save(self, *args, **kwargs):
+        if self.pk is None and self.shortcode in [None, '']:
+            self.shortcode = self.uuid_generator()
+
+        super(HashTag, self).save(*args, **kwargs)
+
+    def uuid_generator(self):
+        shortcode = uuid.uuid4().hex[:8].upper()
+        if HashTag.objects.filter(shortcode=shortcode).exists():
+            self.uuid_generator()
+        else:
+            return shortcode    
 
 # Create your models here.
 class Store(models.Model):

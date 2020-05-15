@@ -40,3 +40,6 @@ mockingjay.sqlite3
 goorm.manifest
 .temp
 secrets.json
+
+redis-stable
+dump.rdb

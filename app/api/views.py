@@ -8,10 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 from .kakaomap import *
 from .tag_search import *
 from .instagram_parser import *
-from app.models import Store
+from app.models import Store, HashTag
 from haversine import haversine
+from django.views.generic.base import View
+from django.shortcuts import get_object_or_404
+from django.contrib.sites.shortcuts import get_current_site
 
-
+from app.tasks import hash_task
+from django.http import HttpResponseNotFound
 
 
 import re
@@ -75,6 +79,27 @@ import re
 #     #식후건 리스트에서 삭제된 가게 삭제
 #     for store in delete_list:
 #         Store.objects.filter(name=store).delete()
+
+
+class ResultView(View):
+    # template_name = "result.html"
+    
+    def get_shortcode(self):
+        shortcode=self.kwargs['shortcode']
+        return shortcode
+    
+    def get(self, request, *args, **kwargs):
+        hashtag=get_object_or_404(HashTag, shortcode=self.get_shortcode())
+        context={}
+        isloading=False
+        if hashtag.data=="":
+            isloading=True
+            # return HttpResponseNotFound("hello")
+        else:
+            context["qs"] = json.loads(hashtag.data)
+        context["is_loading"]=isloading
+        return render(request, "result.html", context=context)
+    
 
 
 def update_data():
@@ -219,45 +244,7 @@ def reply(request):
     return JsonResponse(result, status=200)
 
 
-def hash_search(posts_set):
-        posts_set_sorted=[]
-        for key in posts_set:
-            post={
-                'userid' : key,
-                'count' : len(posts_set[key])
-            }
-            posts_set_sorted.append(post)
-        posts_set_sorted.sort(key = lambda element : element['count'], reverse=True)
-        
-        items=[]
-        cnt=0
-        for post in posts_set_sorted:
-            if cnt==10:
-                break
-            post['username']=useridToUsername(post['userid'])
-            post['url']="https://instagram.com/"+post['username']
 
-            item={
-                "title": post['username'],
-               "description":"게시물 개수 : "+str(post['count']),
-               "thumbnail":{
-                  "imageUrl":post['url']
-               },
-               "buttons":[
-                {
-                 "action":"webLink",
-                 "label":"인스타 정보 확인하기",
-                 "webLinkUrl": post['url']
-                }
-               ]
-            }
-            items.append(item)
-            cnt+=1
-        
-        result = {'version': '2.0',
-            'template': {'outputs': [{'carousel': {'type': 'basicCard',
-            'items': items}}]}}
-        return result
 
 
 @csrf_exempt
@@ -295,7 +282,21 @@ def get_place_based_hashtag(request):
            }
         
     else:
-        posts_set=get_post(hashtags[0])
-        result=hash_search(posts_set)
+        h=HashTag.objects.create(name=hashtags[0])
+        hash_task.delay(hashtags[0], h.shortcode)
+        result = {
+               "version": "2.0",
+               "template": {
+                   "outputs": [
+                       {
+                           "simpleText": {
+                               "text": "https://%s/api/test/%s" % (get_current_site(request), h.shortcode)
+                           }
+                       }
+                   ]
+               }
+           }
+        # posts_set=get_post(hashtags[0])
+        # result=hash_search(posts_set)
 
     return JsonResponse(result, status=200)
