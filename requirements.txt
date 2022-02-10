@@ -1,5 +1,5 @@
 beautifulsoup4==4.8.2
-Django==2.2.10
+Django==2.2.27
 haversine==2.2.0
 lxml==4.5.0
 requests==2.22.0
