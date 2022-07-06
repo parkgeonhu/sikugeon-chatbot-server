@@ -1,7 +1,7 @@
 beautifulsoup4==4.8.2
 Django==2.2.10
 haversine==2.2.0
-lxml==4.5.0
+lxml==4.9.1
 requests==2.22.0
 selenium==3.141.0
 pytest==5.4.1
